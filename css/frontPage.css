@@ -1,0 +1,33 @@
+@charset "utf-8";
+.item_name{
+	font-family: '隶书';
+	font-size: 35px;
+	color: red;
+}
+.row ul{
+	width: 200px;
+	height: auto;
+}
+.row li{
+	width: 100%;
+	height: 56px;
+}
+.nav_active{
+	background-color: #eee;
+	color: white;
+}
+.nac li li:hover{
+	background-color: #eee;
+}
+#answer{
+	background-color: #eee;
+	font-size: 30px;
+}
+.testArea{
+	width: 100%;
+	height: 35px;
+	font-size: 30px;
+}
+.center{
+	text-align: center;
+}
