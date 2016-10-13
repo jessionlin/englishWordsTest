@@ -46,7 +46,7 @@ function nextquestion(){
 		$sql1 = "select chinese from wordslist where id ='{$id}'";
 	} 
 	$row=query($sql1);
-	iconv('GBK', 'UTF-8', $row);
+	iconv('GBK', 'UTF-8', $row);//转换中文字符串编码
 	$row = '"'.$row.'"';
 	if($row){
 			$result='{"success":true,"msg":"更新成功","question":'.$row.'}';
@@ -69,8 +69,9 @@ function add(){
 		}
 		$sql="update wordslist set ifwrong = '1' , wrongdate = '{$date}' where chinese = '{$chinesewords}' and english='{$englishwords}'";
 		$row=otherSQL($sql);
+		$str = getWrong();
 		if($row){
-			$result='{"success":true,"msg":"储存成功"}';
+			$result='{"success":true,"msg":"储存成功","content":'.$str.'}';
 		}
 		else{
 			$result='{"success":false,"msg":"储存失败"}';
@@ -80,6 +81,21 @@ function add(){
 		$result='{"success":false,"msg":"信息未接收到"}';
 	}
 	echo $result;
+}
+//获取错题本前五项
+function getWrong(){
+	$str = NULL;
+	$sql="select id,chinese,english,wrongdate from wordslist where ifwrong=1 limit 0,5";
+	$link=mysqli_connect('localhost','root','root','englishtest');
+	$result = mysqli_query($link, $sql);
+	$i=0;
+	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+		iconv('GBK', 'UTF-8', $row['chinese']);
+		$str = $str.$row['id'].','.$row['chinese'].','.$row['english'].','.$row['wrongdate'].';';
+		$i++;
+	}
+	$str = '"'.$str.'"';
+	return $str;
 }
 //添加心得
 function summary(){
@@ -110,7 +126,6 @@ function otherSQL($sql){
 //查询操作
 function query($sql){
 	$link=mysqli_connect('localhost','root','root','englishtest');
-	mysqli_query($link,'set names utf8');
 	$result = mysqli_query($link, $sql);
 	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
 		if(isset($row['english']))

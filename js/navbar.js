@@ -48,6 +48,9 @@ $(document).ready(function(){
         success:function(data){
         if(data.success){
           $("#display").html(data.msg);
+		  var content = data.content.split(";");
+		  console.log(content);
+		  //为错题本列表添加数值
         }
         else{
           $("#display").html("出现错误:"+data.msg);
