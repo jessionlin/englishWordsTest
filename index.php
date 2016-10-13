@@ -46,13 +46,15 @@ function nextquestion(){
 		$sql1 = "select chinese from wordslist where id ='{$id}'";
 	} 
 	$row=query($sql1);
-	echo "<script>alert(".$row['chinese'].");</script>";
+	iconv('GBK', 'UTF-8', $row);
+	$row = '"'.$row.'"';
 	if($row){
-			$result='{"success":true,"msg":"更新成功","question":'.$row['chinese'].'}';
+			$result='{"success":true,"msg":"更新成功","question":'.$row.'}';
 		}
 		else{
 			$result='{"success":false,"msg":"更新失败"}';
 		}
+	echo $result;
 }
 
 //添加错题本

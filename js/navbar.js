@@ -90,7 +90,7 @@ $(document).ready(function(){
         success:function(data){
         if(data.success){
           $("#ifRight").html(data.msg);
-		  $("#chinese").html(data.question);
+		  $("#chinese").val(data.question);
         }
         else{
           $("#ifRight").html("出现错误:"+data.msg);
