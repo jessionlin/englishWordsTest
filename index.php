@@ -14,6 +14,16 @@ if(isset($_POST['summary'])){
 if((!isset($_POST['english']))&&(isset($_POST['chinese']))){
 	nextquestion();
 }
+if((isset($_REQUEST['act']))&&(isset($_REQUEST['chinese']))){
+	if($_REQUEST['act']=="delete"){
+		deleteWrongWord($_REQUEST['chinese']);
+	}
+}
+if((isset($_REQUEST['act']))&&(isset($_REQUEST['id']))){
+	if($_REQUEST['act']=="delete"){
+		deleteSummary($_REQUEST['id']);
+	}
+}
 //判定使用者的答案是否正确
 function check(){
 	$chinesewords = $_POST['chinese'];
@@ -97,6 +107,40 @@ function getWrong(){
 	}
 	$str = '"'.$str.'"';
 	return $str;
+}
+//删除错词本中的某个单词
+function deleteWrongWord($chinese){
+	$sql="update wordslist set ifwrong = 0 and wrongdate = NULL where chinese = '{$chinese}'";
+	$ifSuc=otherSQL($sql);
+	if($ifSuc){
+		$url='frontPage.php';
+		echo "<script>";
+		echo "window.location.href='{$url}'";//页面跳转函数
+		echo "</script>";
+	}
+	else{
+		echo "<script>";
+		echo "alert("."'"."跳转失败"."'".")";//页面跳转函数
+		echo "</script>";
+		echo $sql;
+	}
+}
+//删除心得列表的某条记录
+function deleteSummary($id){
+	$sql="delete from summary where id = '{$id}'";
+	$ifSuc=otherSQL($sql);
+	if($ifSuc){
+		$url='frontPage.php';
+		echo "<script>";
+		echo "window.location.href='{$url}'";//页面跳转函数
+		echo "</script>";
+	}
+	else{
+		echo "<script>";
+		echo "alert("."'"."跳转失败"."'".")";//页面跳转函数
+		echo "</script>";
+		echo $sql;
+	}
 }
 //获取心得列表前五项
 function getSummary(){

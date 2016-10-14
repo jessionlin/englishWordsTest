@@ -12,6 +12,13 @@ function changecolor(e){
 	}
 	e.style.backgroundColor="#0080FF";
 }
+function deletewrong(e){
+	var chinese = e.id;
+	window.location="index.php?act=delete&chinese="+chinese;
+}
+function deletesummary(e){
+	window.location="index.php?act=delete&id="+e.id;
+}
 $(document).ready(function(){
 		$('#sure').click(function(){
 			$.ajax({
@@ -61,7 +68,7 @@ $(document).ready(function(){
 			  chinese = content[i][1];
 			  english = content[i][2];
 			  date = content[i][3];
-			  $('.show_wrong_list').append("<tr><td>"+id+"</td><td>"+chinese+"</td><td>"+english+"</td><td>"+date+"</td></tr> ");
+			  $('.show_wrong_list').append("<tr><td>"+id+"</td><td>"+chinese+"</td><td>"+english+"</td><td>"+date+"</td><td><div onclick="+'"'+"deletewrong(this)"+'"'+" class="+'"'+"btn btn-warning"+'"'+" id="+chinese+">删除</div></td></tr> ");
 		  }
         }
         else{
@@ -97,7 +104,7 @@ $(document).ready(function(){
 			  id = parseInt(content[i][0]);
 			  sum = content[i][1];
 			  date = content[i][2];
-			  $('.show_summary_list').append("<tr><td>"+id+"</td><td>"+sum+"</td><td>"+date+"</td></tr> ");
+			  $('.show_summary_list').append("<tr><td>"+id+"</td><td>"+sum+"</td><td>"+date+"</td><td><div onclick="+'"'+"deletesummary(this)"+'"'+" class="+'"'+"btn btn-warning"+'"'+" id="+id+">删除</div></td></tr> ");
 		  }
         }
         else{

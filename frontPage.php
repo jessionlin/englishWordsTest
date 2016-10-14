@@ -46,8 +46,9 @@
   					<thead>
   						<th width="10%" class="center">编号</th>
   						<th width="30%" class="center">中文</th>
-  						<th width="30%" class="center">英文</th>
-  						<th width="30%" class="center">时间</th>
+  						<th width="25%" class="center">英文</th>
+  						<th width="25%" class="center">时间</th>
+						<th width="10%" class="center">操作</th>
   					</thead>
   				<tbody class="show_wrong_list">
   				</tbody>
@@ -69,6 +70,7 @@
   						<th width="10%" class="center">编号</th>
   						<th width="30%" class="center">心得</th>
   						<th width="30%" class="center">时间</th>
+						<th width="30%" class="center">操作</th>
   					</thead>
   				<tbody class="show_summary_list">
   				</tbody>
