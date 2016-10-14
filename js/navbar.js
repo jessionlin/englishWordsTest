@@ -49,8 +49,20 @@ $(document).ready(function(){
         if(data.success){
           $("#display").html(data.msg);
 		  var content = data.content.split(";");
-		  console.log(content);
+		  var id,chinese,english,date;
 		  //为错题本列表添加数值
+		  if($('#table_wronglist').css('display')=="block"){
+			  $(".show_wrong_list tr").remove("tr[id!=1]");//判断之前是否显示过列表，如果显示过，则只需清空之前的所有tr元素，无需再添加表
+		  }
+		  $('#table_wronglist').css('display','block');//显示错词本表头
+		  for(var i=0;i<content.length-1;i++){
+			  content[i] = content[i].split(",");
+			  id = parseInt(content[i][0]);
+			  chinese = content[i][1];
+			  english = content[i][2];
+			  date = content[i][3];
+			  $('.show_wrong_list').append("<tr><td>"+id+"</td><td>"+chinese+"</td><td>"+english+"</td><td>"+date+"</td></tr> ");
+		  }
         }
         else{
           $("#display").html("出现错误:"+data.msg);
@@ -72,6 +84,21 @@ $(document).ready(function(){
         success:function(data){
         if(data.success){
           $("#display_2").html(data.msg);
+		  var content = data.content.split(";");
+		  var id,sum,date;
+		  console.log(content);
+		  //为个人心得列表添加数值
+		  if($('#table_summarylist').css('display')=="block"){
+			  $(".show_summary_list tr").remove("tr[id!=1]");//判断之前是否显示过列表，如果显示过，则只需清空之前的所有tr元素，无需再添加表
+		  }
+		  else	$('#table_summarylist').css('display','block');//显示个人心得列表表头
+		  for(var i=0;i<content.length-1;i++){
+			  content[i] = content[i].split(",");
+			  id = parseInt(content[i][0]);
+			  sum = content[i][1];
+			  date = content[i][2];
+			  $('.show_summary_list').append("<tr><td>"+id+"</td><td>"+sum+"</td><td>"+date+"</td></tr> ");
+		  }
         }
         else{
           $("#display_2").html("出现错误:"+data.msg);

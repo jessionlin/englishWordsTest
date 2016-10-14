@@ -1,4 +1,5 @@
 <?php
+require_once 'config.php';
  header("Content-Type:application/json;charset=utf-8");
 
 if((isset($_POST['english']))&&(isset($_POST['chinese']))){
@@ -85,8 +86,8 @@ function add(){
 //获取错题本前五项
 function getWrong(){
 	$str = NULL;
-	$sql="select id,chinese,english,wrongdate from wordslist where ifwrong=1 limit 0,5";
-	$link=mysqli_connect('localhost','root','root','englishtest');
+	$sql="select id,chinese,english,wrongdate from wordslist where ifwrong=1 order by id desc limit 0,5";
+	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
 	$result = mysqli_query($link, $sql);
 	$i=0;
 	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
@@ -97,15 +98,34 @@ function getWrong(){
 	$str = '"'.$str.'"';
 	return $str;
 }
+//获取心得列表前五项
+function getSummary(){
+	$str = NULL;
+	$sql="select id,sum,sumdate from summary order by id desc limit 0,5";
+	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
+	$result = mysqli_query($link, $sql);
+	$i=0;
+	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+		//iconv('GBK', 'UTF-8', $row['sum']);
+		$str = $str.$row['id'].','.$row['sum'].','.$row['sumdate'].';';
+		$i++;
+	}
+	$str = '"'.$str.'"';
+	return $str;
+}
 //添加心得
 function summary(){
 	if(isset($_POST['summary'])){
 		$summary=$_POST['summary'];
+		if(strstr($summary,',')){
+			$summary=str_replace(',','。',$summary);
+		}
 		$date=date("Y.m.d");
 		$sql="insert into summary(sum,sumdate) values('{$summary}','{$date}')";
 		$row=otherSQL($sql);
+		$str = getSummary();
 		if($row){
-			$result='{"success":true,"msg":"储存成功"}';
+			$result='{"success":true,"msg":"储存成功","content":'.$str.'}';
 		}
 		else{
 			$result='{"success":false,"msg":"储存失败"}';
@@ -119,13 +139,13 @@ function summary(){
 
 //除查询外的其他操作
 function otherSQL($sql){
-	$link=mysqli_connect('localhost','root','root','englishtest');
+	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
 	$result=mysqli_query($link,$sql);
 	return $result;
 }
 //查询操作
 function query($sql){
-	$link=mysqli_connect('localhost','root','root','englishtest');
+	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
 	$result = mysqli_query($link, $sql);
 	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
 		if(isset($row['english']))

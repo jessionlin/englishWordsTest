@@ -31,3 +31,6 @@
 .center{
 	text-align: center;
 }
+#table_wronglist,#table_summarylist{
+	display:none;
+}

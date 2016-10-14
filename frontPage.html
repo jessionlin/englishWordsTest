@@ -21,7 +21,7 @@
 		</div>
 	</nav>
 	<div class="row col-xs-9">
-  		<div class="collapse navbar-collapse col-xs-3" id="myScrollspy">
+  		<div class="collapse navbar-collapse col-xs-3" id="nav_coll">
   			<ul class="nav nav-tabs nav-stacked size" data-spy="affix" style="font-size: 25px;font-family: '隶书';">
   				<li onclick="change(this)"><a href="#wordsTest">单次测评</a></li>
   				<li onclick="change(this)"><a href="#wordsWrong">错词本</a></li>
@@ -42,20 +42,14 @@
 					</tr>
   				</table>
   				<h2 id="wordsWrong" class="item_name">错词本</h2>
-  				<table class="table table-hover" style="text-align: center;">
+  				<table class="table table-hover" style="text-align: center;" id="table_wronglist">
   					<thead>
   						<th width="10%" class="center">编号</th>
   						<th width="30%" class="center">中文</th>
   						<th width="30%" class="center">英文</th>
   						<th width="30%" class="center">时间</th>
   					</thead>
-  				<tbody>
-  					<tr>
-  						<td>01</td>
-  						<td>long</td>
-  						<td>长的</td>
-  						<td>2016.02.23</td>
-  					</tr>
+  				<tbody class="show_wrong_list">
   				</tbody>
   				</table>
   				<table class="testArea">
@@ -70,6 +64,15 @@
 					</tr>
   				</table>
   				<h2 id="experience" class="item_name">心得体会</h2>
+				<table class="table table-hover" style="text-align: center;" id="table_summarylist">
+  					<thead>
+  						<th width="10%" class="center">编号</th>
+  						<th width="30%" class="center">心得</th>
+  						<th width="30%" class="center">时间</th>
+  					</thead>
+  				<tbody class="show_summary_list">
+  				</tbody>
+  				</table>
   				<table class="testArea">
 					<tr>
 						<td width="30%"><input type="text" placeholder="心得" id="summary"/></td>
