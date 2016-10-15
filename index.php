@@ -3,46 +3,75 @@ require_once 'config.php';
  header("Content-Type:application/json;charset=utf-8");
 
 if((isset($_POST['english']))&&(isset($_POST['chinese']))){
-	check();
+	$chinesewords = $_POST['chinese'];
+	$englishwords = $_POST['english'];
+	check($chinesewords,$englishwords);
 }
 if((isset($_POST['english2']))&&(isset($_POST['chinese2']))){
 	add();
+}
+if((isset($_POST['english3']))&&(isset($_POST['chinese3']))){
+	addEnglishWords();
+}
+if((isset($_POST['english4']))&&(isset($_POST['chinese4']))){
+	$chinesewords = $_POST['chinese4'];
+	$englishwords = $_POST['english4'];
+	check($chinesewords,$englishwords);
 }
 if(isset($_POST['summary'])){
 	summary();
 }
 if((!isset($_POST['english']))&&(isset($_POST['chinese']))){
-	nextquestion();
+	$chinesewords = $_POST['chinese'];
+	nextquestion(0,$chinesewords);
+}
+if((!isset($_POST['english4']))&&(isset($_POST['chinese4']))){
+	$chinesewords = $_POST['chinese4'];
+	nextquestion(1,$chinesewords);
 }
 if((isset($_REQUEST['act']))&&(isset($_REQUEST['chinese']))){
 	if($_REQUEST['act']=="delete"){
 		deleteWrongWord($_REQUEST['chinese']);
 	}
 }
+//用户人为添加单词
+function addEnglishWords(){
+	$chinese = $_POST['chinese3'];
+	$english = $_POST['english3'];
+	$ifAdded = findWord($chinese);
+	if(!$ifAdded){
+		$str = $chinese.','.$english.','.'0'.','.' '.';';
+		$file = 'wordslist.txt';
+		write($str,$file,'a');
+		$result='{"success":true,"msg":"添加成功"}';
+	}
+	else{
+		$result='{"success":false,"msg":"数据已存在"}';
+	}
+	echo $result;
+}
 //判定使用者的答案是否正确
-function check(){
-	$chinesewords = $_POST['chinese'];
-	$englishwords = $_POST['english'];
+function check($chinesewords,$englishwords){
 	$result='{"success":false,"msg":"回答错误"}';
-	$list=findWord();
+	$list=findWord($chinesewords);
 		if($list==$englishwords){
 			$result='{"success":true,"msg":"回答正确"}';
 		}
 	echo $result;
 }
 //从文件中找出相应的单词
-function findWord(){
-	$chinesewords = $_POST['chinese'];
+function findWord($chinesewords){
 	$words=strDataString(read('wordslist.txt'),';',',');
 	for($i=1;$i<count($words);$i++){
 		if($words[$i][0]==$chinesewords){
 			return $words[$i][1];
 		}
 	}
+	return 0;
 }
 //跳转到下一题
-function nextquestion(){
-	$row=getNextWord();
+function nextquestion($act,$chinesewords){
+	$row=getNextWord($act,$chinesewords);
 	$row = '"'.$row.'"';
 	if($row){
 			$result='{"success":true,"msg":"更新成功","question":'.$row.'}';
@@ -53,15 +82,29 @@ function nextquestion(){
 	echo $result;
 }
 //从文件中找出下一个词
-function getNextWord(){
-	$chinesewords = $_POST['chinese'];
+function getNextWord($act,$chinesewords){
 	$words=strDataString(read('wordslist.txt'),';',',');
 	for($i=1;$i<count($words);$i++){
 		if($words[$i][0]==$chinesewords){
-			if($i<count($words)-1){
-				return $words[$i+1][0];
+			if($act==1){
+				$j=$i;
+				do{
+					if($j<count($words)-1){
+						$j++;
+					}
+					else{
+						$j = 1;
+					}
+				}while(!(intval($words[$j][2])));
+				return $words[$j][0];
 			}
-			else return $words[1][0];
+			else if($act==0){
+				if($i<count($words)-1){
+					return $words[$i+1][0];
+				}
+				else return $words[1][0];
+			}
+			
 		}
 	}
 }

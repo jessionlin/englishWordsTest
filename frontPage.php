@@ -24,8 +24,10 @@
   		<div class="collapse navbar-collapse col-xs-3" id="nav_coll">
   			<ul class="nav nav-tabs nav-stacked size" data-spy="affix" style="font-size: 25px;font-family: '隶书';">
   				<li onclick="change(this)"><a href="#wordsTest">单次测评</a></li>
-  				<li onclick="change(this)"><a href="#wordsWrong">错词本</a></li>
+  				<li onclick="change(this)"><a href="#wordsWrong">添加错词</a></li>
   				<li onclick="change(this)"><a href="#experience">学习心得</a></li>
+				<li onclick="change(this)"><a href="#addwords">添加单词</a></li>
+				<li onclick="change(this)"><a href="#wordsWrongTest">错词测评</a></li>
   			</ul>
   		</div>
   			<div class="col-xs-6" style="float: right;">
@@ -41,7 +43,7 @@
 						<td><p id="ifRight"></p></td></td>
 					</tr>
   				</table>
-  				<h2 id="wordsWrong" class="item_name">错词本</h2>
+  				<h2 id="wordsWrong" class="item_name">添加错词</h2>
   				<table class="table table-hover" style="text-align: center;" id="table_wronglist">
   					<thead>
   						<th width="10%" class="center">编号</th>
@@ -83,6 +85,30 @@
 						<td><p id="display_2"></p></td>
 					</tr>
 				</table>
+        <h2 id="addwords" class="item_name">添加单词</h2>
+        <table class="testArea">
+            <tr>
+              <td width="30%"><input type="text" placeholder="中文" id="chinese_3" /></td>
+              <td width="5%">&nbsp;</td>
+              <td width="25%"><input type="text" placeholder="英文" id="english_3" /></td>
+              <td width="25%"><div class="btn btn-success" id="add">确认</div></td>
+            </tr>
+          <tr>
+            <td><p id="show"></p></td>
+          </tr>
+          </table>
+          <h2 id="wordsWrongTest" class="item_name">错词测评</h2>
+          <table class="testArea">
+            <tr>
+              <td width="35%"><input id="chinese_4" value="长的" disabled/></td>
+              <td width="25%"><input type="text" placeholder="请输入答案" id="english_4" /></td>
+              <td width="25%"><div class="btn btn-info" id="test">确定</div></td>
+              <td width="25%"><div class="btn btn-success" id="nextWrong">下一题</div></td>
+            </tr>
+          <tr>
+            <td><p id="ifWrongRight"></p></td></td>
+          </tr>
+          </table>
   			</div>
   	</div>
   	<script type="text/javascript" src="js/jquery.js"></script>
