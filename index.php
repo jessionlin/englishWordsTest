@@ -19,45 +19,30 @@ if((isset($_REQUEST['act']))&&(isset($_REQUEST['chinese']))){
 		deleteWrongWord($_REQUEST['chinese']);
 	}
 }
-if((isset($_REQUEST['act']))&&(isset($_REQUEST['id']))){
-	if($_REQUEST['act']=="delete"){
-		deleteSummary($_REQUEST['id']);
-	}
-}
 //判定使用者的答案是否正确
 function check(){
 	$chinesewords = $_POST['chinese'];
 	$englishwords = $_POST['english'];
 	$result='{"success":false,"msg":"回答错误"}';
-	$sql="select english from wordslist where chinese = '{$chinesewords}'";
-	$list=query($sql);	
+	$list=findWord();
 		if($list==$englishwords){
 			$result='{"success":true,"msg":"回答正确"}';
 		}
 	echo $result;
 }
-//检查添加的是否是词库中的单词
-function ifexit(){
-	$chinesewords = $_POST['chinese2'];
-	$englishwords = $_POST['english2'];
-	$sql="select english from wordslist where chinese = '{$chinesewords}' and english='{$englishwords}'";
-	$list=query($sql);
-	return $list;
+//从文件中找出相应的单词
+function findWord(){
+	$chinesewords = $_POST['chinese'];
+	$words=strDataString(read('wordslist.txt'),';',',');
+	for($i=1;$i<count($words);$i++){
+		if($words[$i][0]==$chinesewords){
+			return $words[$i][1];
+		}
+	}
 }
 //跳转到下一题
 function nextquestion(){
-	$chinesewords = $_POST['chinese'];
-	$sql="select id from wordslist where chinese = '{$chinesewords}'";
-	$id=query($sql);
-	if($id==1){
-		$sql1 = "select chinese from wordslist where id = (select max(id) from wordslist)";
-	}
-	else if($id>1){
-		$id--;
-		$sql1 = "select chinese from wordslist where id ='{$id}'";
-	} 
-	$row=query($sql1);
-	iconv('GBK', 'UTF-8', $row);//转换中文字符串编码
+	$row=getNextWord();
 	$row = '"'.$row.'"';
 	if($row){
 			$result='{"success":true,"msg":"更新成功","question":'.$row.'}';
@@ -67,21 +52,25 @@ function nextquestion(){
 		}
 	echo $result;
 }
-
+//从文件中找出下一个词
+function getNextWord(){
+	$chinesewords = $_POST['chinese'];
+	$words=strDataString(read('wordslist.txt'),';',',');
+	for($i=1;$i<count($words);$i++){
+		if($words[$i][0]==$chinesewords){
+			if($i<count($words)-1){
+				return $words[$i+1][0];
+			}
+			else return $words[1][0];
+		}
+	}
+}
 //添加错题本
 function add(){
 	if((isset($_POST['chinese2']))&&(isset($_POST['english2']))){
-		$chinesewords = $_POST['chinese2'];
-		$englishwords = $_POST['english2'];
-		$date=date("Y.m.d");
-		$list=ifexit();
-		if(!$list){
-			return $result='{"success":false,"msg":"储存失败，中英文不对应"}';
-		}
-		$sql="update wordslist set ifwrong = '1' , wrongdate = '{$date}' where chinese = '{$chinesewords}' and english='{$englishwords}'";
-		$row=otherSQL($sql);
-		$str = getWrong();
-		if($row){
+		$str=addWrong();
+		if($str){
+			$str  = getWrong();
 			$result='{"success":true,"msg":"储存成功","content":'.$str.'}';
 		}
 		else{
@@ -93,25 +82,66 @@ function add(){
 	}
 	echo $result;
 }
-//获取错题本前五项
+//从文件中添加或删除错题本输入为1添加。0为删除
+function addWrong(){
+	$chinesewords = $_POST['chinese2'];
+	$englishwords = $_POST['english2'];
+	$date=date("Y.m.d");
+	$if_exists = false;
+	$words=strDataString(read('wordslist.txt'),';',',');
+	for($i=1;$i<count($words);$i++){
+		if(($words[$i][0]==$chinesewords)&&($words[$i][1]==$englishwords)){
+			$if_exists = true;
+			$words[$i][2]=1;
+			$words[$i][3]=$date;
+		}
+	}
+	if($if_exists){
+		$str = mkTStr(turn($words));
+			$file='wordslist.txt';
+			write($str,$file,'w');
+			return 1;
+	}
+	else{
+		$str = $chinesewords.','.$englishwords.','.'1'.','.$date.';';
+			$file='wordslist.txt';
+			write($str,$file,'a');
+			return 1;
+	}
+	
+}
+//将数组的存储顺序倒置
+function turn($data){
+	if(is_array($data)){
+		$i=count($data)-1;
+		$j=0;
+		$arr = array();
+		for($i;$i>-1;$i--){
+			$arr[$j] = $data[$i];
+			$j++;
+		}
+		return $arr;
+	}
+}
+//获取错题本最新五项
 function getWrong(){
 	$str = NULL;
-	$sql="select id,chinese,english,wrongdate from wordslist where ifwrong=1 order by id desc limit 0,5";
-	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
-	$result = mysqli_query($link, $sql);
+	$words=strDataString(read('wordslist.txt'),';',',');
 	$i=0;
-	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-		iconv('GBK', 'UTF-8', $row['chinese']);
-		$str = $str.$row['id'].','.$row['chinese'].','.$row['english'].','.$row['wrongdate'].';';
-		$i++;
+	$j = 1;
+	for($i;$i<count($words);$i++){
+		error_reporting(1);
+		if((intval($words[$i][2]))&&($j<=5)){
+			$str = $str .$j.','.mkOStr($words[$i]).';';
+			$j++;
+		}
 	}
 	$str = '"'.$str.'"';
 	return $str;
 }
 //删除错词本中的某个单词
 function deleteWrongWord($chinese){
-	$sql="update wordslist set ifwrong = 0 and wrongdate = NULL where chinese = '{$chinese}'";
-	$ifSuc=otherSQL($sql);
+	$ifSuc=deleteWords($chinese);
 	if($ifSuc){
 		$url='frontPage.php';
 		echo "<script>";
@@ -122,37 +152,44 @@ function deleteWrongWord($chinese){
 		echo "<script>";
 		echo "alert("."'"."跳转失败"."'".")";//页面跳转函数
 		echo "</script>";
-		echo $sql;
+		echo $sql;	
 	}
 }
-//删除心得列表的某条记录
-function deleteSummary($id){
-	$sql="delete from summary where id = '{$id}'";
-	$ifSuc=otherSQL($sql);
-	if($ifSuc){
-		$url='frontPage.php';
-		echo "<script>";
-		echo "window.location.href='{$url}'";//页面跳转函数
-		echo "</script>";
+
+//删除单词
+function deleteWords($chinese){
+	$if_exists = false;
+	$words=strDataString(read('wordslist.txt'),';',',');
+	for($i=1;$i<count($words);$i++){
+		if(($words[$i][0]==$chinese)){
+			$if_exists = true;
+			$words[$i][2]=0;
+			$words[$i][3]=' ';
+		}
+	}
+	if($if_exists){
+		$str = mkTStr(turn($words));
+			$file='wordslist.txt';
+			write($str,$file,'w');
+			return 1;
 	}
 	else{
-		echo "<script>";
-		echo "alert("."'"."跳转失败"."'".")";//页面跳转函数
-		echo "</script>";
-		echo $sql;
+		return 0;
 	}
 }
 //获取心得列表前五项
 function getSummary(){
 	$str = NULL;
-	$sql="select id,sum,sumdate from summary order by id desc limit 0,5";
-	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
-	$result = mysqli_query($link, $sql);
-	$i=0;
-	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-		//iconv('GBK', 'UTF-8', $row['sum']);
-		$str = $str.$row['id'].','.$row['sum'].','.$row['sumdate'].';';
-		$i++;
+	//error_reporting(0);
+	$words=strDataString(read('summary.txt'),';',',');
+	$i=1;
+	$str=NULL;
+	$j=1;
+	for($i;$i<count($words);$i++){
+		if($j<=5){
+			$str = $str .$j.','.mkOStr($words[$i]).';';		
+			$j++;
+		}
 	}
 	$str = '"'.$str.'"';
 	return $str;
@@ -165,10 +202,12 @@ function summary(){
 			$summary=str_replace(',','。',$summary);
 		}
 		$date=date("Y.m.d");
-		$sql="insert into summary(sum,sumdate) values('{$summary}','{$date}')";
-		$row=otherSQL($sql);
+		$words=strDataString(read('wordslist.txt'),';',',');
+		$strr = $summary.','.$date.';';
+		$file='summary.txt';
+		write($strr,$file,'a');
 		$str = getSummary();
-		if($row){
+		if($strr){
 			$result='{"success":true,"msg":"储存成功","content":'.$str.'}';
 		}
 		else{
@@ -180,23 +219,51 @@ function summary(){
 	}
 	echo $result;
 }
-
-//除查询外的其他操作
-function otherSQL($sql){
-	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
-	$result=mysqli_query($link,$sql);
-	return $result;
+//从文件中读取数据
+function read($file){
+	$str = file_get_contents($file);
+	return $str;
 }
-//查询操作
-function query($sql){
-	$link=mysqli_connect(DB_HOST,DB_USER,DB_PWD,DB_NAME);
-	$result = mysqli_query($link, $sql);
-	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-		if(isset($row['english']))
-		return $row['english'];
-		else if(isset($row['chinese']))
-		return $row['chinese'];
-		else if(isset($row['id']))
-		return $row['id'];
+//在文件末尾添加一段数据
+function write($str,$file,$op='a'){
+	$myfile = fopen($file,$op);
+	 fwrite($myfile,$str);
+}
+/*拆解数据字符串 
+*  输入字符串，两个操作符，第一个
+*	操作符默认为';'，第二个默认为空
+*	输出的数组第一个数据从下标为1开始
+*/
+function strDataString($str,$op1=';',$op2=NULL){
+	$data = explode($op1,$str);
+	if($op2){
+		$i=0;
+		$datas=array();
+		for($i=count($data)-1;$i>-1;$i--){
+			$datas[count($data)-1-$i]=explode($op2,$data[$i]);
+		}
+	}
+	return $datas;
+}
+//将一维数组拼成字符串
+function mkOStr($data,$op=','){
+	if(is_array($data)){
+		$j=1;
+		$str = $data[0];
+		for($j;$j<count($data);$j++){
+			$str = $str . $op . $data[$j];
+		}
+		return $str;
+	}
+}
+//将二维数组拼成字符串
+function mkTStr($datas,$op=';'){
+	if(is_array($datas)){
+		$i=0;
+		$str = NULL;
+		for($i;$i<count($datas[$i]);$i++){
+			$str = $str . mkOStr($datas[$i]) . $op;
+		}
+		return $str;
 	}
 }

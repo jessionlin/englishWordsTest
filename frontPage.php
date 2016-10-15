@@ -70,7 +70,6 @@
   						<th width="10%" class="center">编号</th>
   						<th width="30%" class="center">心得</th>
   						<th width="30%" class="center">时间</th>
-						<th width="30%" class="center">操作</th>
   					</thead>
   				<tbody class="show_summary_list">
   				</tbody>

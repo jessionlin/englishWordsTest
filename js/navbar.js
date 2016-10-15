@@ -16,9 +16,6 @@ function deletewrong(e){
 	var chinese = e.id;
 	window.location="index.php?act=delete&chinese="+chinese;
 }
-function deletesummary(e){
-	window.location="index.php?act=delete&id="+e.id;
-}
 $(document).ready(function(){
 		$('#sure').click(function(){
 			$.ajax({
@@ -56,6 +53,7 @@ $(document).ready(function(){
         if(data.success){
           $("#display").html(data.msg);
 		  var content = data.content.split(";");
+		  console.log(content);
 		  var id,chinese,english,date;
 		  //为错题本列表添加数值
 		  if($('#table_wronglist').css('display')=="block"){
@@ -67,7 +65,7 @@ $(document).ready(function(){
 			  id = parseInt(content[i][0]);
 			  chinese = content[i][1];
 			  english = content[i][2];
-			  date = content[i][3];
+			  date = content[i][4];
 			  $('.show_wrong_list').append("<tr><td>"+id+"</td><td>"+chinese+"</td><td>"+english+"</td><td>"+date+"</td><td><div onclick="+'"'+"deletewrong(this)"+'"'+" class="+'"'+"btn btn-warning"+'"'+" id="+chinese+">删除</div></td></tr> ");
 		  }
         }
@@ -101,10 +99,11 @@ $(document).ready(function(){
 		  else	$('#table_summarylist').css('display','block');//显示个人心得列表表头
 		  for(var i=0;i<content.length-1;i++){
 			  content[i] = content[i].split(",");
+			  console.log(content);
 			  id = parseInt(content[i][0]);
-			  sum = content[i][1];
-			  date = content[i][2];
-			  $('.show_summary_list').append("<tr><td>"+id+"</td><td>"+sum+"</td><td>"+date+"</td><td><div onclick="+'"'+"deletesummary(this)"+'"'+" class="+'"'+"btn btn-warning"+'"'+" id="+id+">删除</div></td></tr> ");
+			  sum = content[i][2];
+			  date = content[i][1];
+			  $('.show_summary_list').append("<tr><td>"+id+"</td><td>"+sum+"</td><td>"+date+"</td></tr> ");
 		  }
         }
         else{
