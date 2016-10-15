@@ -12,11 +12,13 @@ function changecolor(e){
 	}
 	e.style.backgroundColor="#0080FF";
 }
+//删除某一错词
 function deletewrong(e){
 	var chinese = e.id;
 	window.location="index.php?act=delete&chinese="+chinese;
 }
 $(document).ready(function(){
+		//单次测评确认事件
 		$('#sure').click(function(){
 			$.ajax({
 				type:"POST",
@@ -40,6 +42,7 @@ $(document).ready(function(){
 			}
 			});
 		});
+		//添加错词确认事件
 		$('#sure_2').click(function(){
       $.ajax({
         type:"POST",
@@ -78,6 +81,7 @@ $(document).ready(function(){
       }
       });
     });
+	//心得添加确认事件
 	$('#sure_3').click(function(){
       $.ajax({
         type:"POST",
@@ -115,6 +119,7 @@ $(document).ready(function(){
       }
       });
     });
+	//单次测评下一题事件
 	$('#next').click(function(){
       $.ajax({
         type:"POST",
@@ -137,6 +142,7 @@ $(document).ready(function(){
       }
       });
     });
+	//添加单词确认事件
 	$('#add').click(function(){
 		$.ajax({
 			type:"POST",
@@ -159,6 +165,7 @@ $(document).ready(function(){
       }
 		});
 	});
+	//错词测评确认事件
 	$('#test').click(function(){
 			$.ajax({
 				type:"POST",
@@ -167,7 +174,6 @@ $(document).ready(function(){
 				data:{
 					chinese4:$('#chinese_4').val(),
 					english4:$('#english_4').val(),
-					action:1,
 				},
 				success:function(data){
 				if(data.success){
@@ -182,6 +188,7 @@ $(document).ready(function(){
 			}
 			});
 		});
+		//错词测评下一题事件
 		$('#nextWrong').click(function(){
       $.ajax({
         type:"POST",

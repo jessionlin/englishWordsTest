@@ -1,34 +1,49 @@
 <?php
 require_once 'config.php';
  header("Content-Type:application/json;charset=utf-8");
-
+ 
+//获取单次测评相应数据
 if((isset($_POST['english']))&&(isset($_POST['chinese']))){
 	$chinesewords = $_POST['chinese'];
 	$englishwords = $_POST['english'];
 	check($chinesewords,$englishwords);
 }
+
+//获取添加错词数据
 if((isset($_POST['english2']))&&(isset($_POST['chinese2']))){
 	add();
 }
+
+//获取添加单词数据
 if((isset($_POST['english3']))&&(isset($_POST['chinese3']))){
 	addEnglishWords();
 }
+
+//获取错词测评数据
 if((isset($_POST['english4']))&&(isset($_POST['chinese4']))){
 	$chinesewords = $_POST['chinese4'];
 	$englishwords = $_POST['english4'];
 	check($chinesewords,$englishwords);
 }
+
+//获取心得数据
 if(isset($_POST['summary'])){
 	summary();
 }
+
+//获取单词测评下一题所需数据
 if((!isset($_POST['english']))&&(isset($_POST['chinese']))){
 	$chinesewords = $_POST['chinese'];
 	nextquestion(0,$chinesewords);
 }
+
+//获取错词测评下一题所需相关数据
 if((!isset($_POST['english4']))&&(isset($_POST['chinese4']))){
 	$chinesewords = $_POST['chinese4'];
 	nextquestion(1,$chinesewords);
 }
+
+//获取删除特定错词数据
 if((isset($_REQUEST['act']))&&(isset($_REQUEST['chinese']))){
 	if($_REQUEST['act']=="delete"){
 		deleteWrongWord($_REQUEST['chinese']);
